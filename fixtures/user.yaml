@@ -1,0 +1,11 @@
+# fixtures/user.yaml
+App\Entity\User:
+    user_{1..100}:
+        email: <email()>
+        password: "Test1234"
+        # password: <encodePassword('Test1234')>
+        firstname: <firstname()>
+        lastname: <lastname()>
+        createdAt: <dateImmutable(<dateTime()>)>
+        groupe: '@groupe_*'
+        

@@ -1,0 +1,6 @@
+App\Entity\Groupe:
+    groupe_{1..5}:
+        name: 'Groupe<numberBetween(1,5)>'
+        createdAt: <dateImmutable(<dateTime()>)>
+    
+        
