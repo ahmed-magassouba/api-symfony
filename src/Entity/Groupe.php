@@ -2,6 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,7 +17,31 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+           normalizationContext: ['groups' => ['groupe:getCollection:read']],
+           denormalizationContext: ['groups' => ['groupe:getCollection:write']],
+        ),
+
+        new Post(
+          normalizationContext: ['groups' => ['groupe:post:read']],
+          denormalizationContext: ['groups' => ['groupe:post:write']],
+        ),
+
+        new Get(),
+
+        new Put(),
+
+        new Patch(),
+
+        new Delete(),
+
+   ],
+
+
+
+)]
 class Groupe
 {
     #[ORM\Id]
@@ -18,6 +50,7 @@ class Groupe
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['groupe:getCollection:read','user:get:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
@@ -27,6 +60,7 @@ class Groupe
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'groupe', targetEntity: User::class)]
+    #[Groups(['groupe:getCollection:read'])]
     private Collection $users;
 
 

@@ -28,3 +28,6 @@ services:
        arguments:
           - '@security.user_password_hasher'
     #     tags: [ { name: nelmio_alice.faker.provider } ]
+    App\OpenApi\JwtDecorator:
+       decorates: 'api_platform.openapi.factory'
+       arguments: ['@.inner']

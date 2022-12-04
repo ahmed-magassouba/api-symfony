@@ -20,46 +20,35 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 
 #[ApiResource(
-    // collectionOperations: [
-    //     'get' => [
-    //         'security' => 'is_granted("ROLE_ADMIN")',
-    //         'security_message' => 'Only admins can access this resource',
-    //     ],
-    //     'post' => [
-    //         'security' => 'is_granted("ROLE_ADMIN")',
-    //         'security_message' => 'Only admins can access this resource',
-    //     ],
-    // ],
+
     operations: [
-         new GetCollection(),
+         new GetCollection(
+            normalizationContext: ['groups' => ['user:getCollection:read']],
+            denormalizationContext: ['groups' => ['user:post:write']],
+         ),
+
          new Post(
            normalizationContext: ['groups' => ['user:post:read']],
-
            denormalizationContext: ['groups' => ['user:post:write']],
             processor: UserProcessor::class,
+            // security: 'is_granted("ROLE_ADMIN")',
+            // securityMessage: 'Only admins can access this resource',
+            // securityPostDenormalize: 'is_granted("ROLE_ADMIN")',
+            // securityPostDenormalizeMessage: 'Only admins can access this resource',
+            // securityPostValidationMessage: 'Only admins can access this resource',
+            // securityPostValidation: 'is_granted("ROLE_ADMIN")',
+         ),
+
+         new Get(normalizationContext: ['groups' => ['user:get:read']],
 
          ),
-         new Get(),
+
          new Put(),
+
          new Patch(),
+
          new Delete(),
 
-        // 'get' => [
-        //     'security' => 'is_granted("ROLE_ADMIN")',
-        //     'security_message' => 'Only admins can access this resource',
-        // ],
-        // 'post' => [
-        //     'security' => 'is_granted("ROLE_ADMIN")',
-        //     'security_message' => 'Only admins can access this resource',
-        // ],
-        // 'put' => [
-        //     'security' => 'is_granted("ROLE_ADMIN")',
-        //     'security_message' => 'Only admins can access this resource',
-        // ],
-        // 'delete' => [
-        //     'security' => 'is_granted("ROLE_ADMIN")',
-        //     'security_message' => 'Only admins can access this resource',
-        // ],
     ],
 
 
@@ -72,11 +61,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user:post:write'])]
+    #[Groups(['user:post:write','user:get:read'])]
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['user:post:write'])]
     private array $roles = [];
 
     /**
@@ -87,20 +75,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:post:write'])]
+    #[Groups(['user:post:write','user:getCollection:read','groupe:getCollection:read','user:get:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:post:write'])]
+    #[Groups(['user:post:write','user:getCollection:read','groupe:getCollection:read','user:get:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column]
-    #[Groups(['user:post:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups(['user:post:write'])]
-    private ?groupe $groupe = null;
+    #[Groups(['user:post:write','user:get:read'])]
+    private ?Groupe $groupe = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
